@@ -27,7 +27,11 @@ function useMessages() {
       'irc',
     )
     webSocket.addEventListener('message', ({ data }) => {
-      console.log('new message', data, typeof data)
+      if (data.startsWith(':PING ')) {
+        webSocket.send(':PONG tmi.twitch.tv')
+        console.log('>', ':PONG tmi.twitch.tv')
+      }
+      console.log('<', data)
       setMessages((messages) => messages.concat(parseMessage(data.trim())))
     })
     webSocket.addEventListener('open', () => {

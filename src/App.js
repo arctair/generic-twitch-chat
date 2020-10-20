@@ -10,7 +10,9 @@ function Chat({ messages }) {
 }
 
 function ChatMessages({ messages }) {
-  return messages.map((message, index) => <div key={index}>{message}</div>)
+  return messages.map(({ text, user }, index) => (
+    <div key={index}>{user}: {text}</div>
+  ))
 }
 
 function useMessages() {
@@ -22,7 +24,7 @@ function useMessages() {
     )
     webSocket.addEventListener('message', ({ data }) => {
       console.log('new message', data, typeof data)
-      setMessages((messages) => messages.concat('>>>' + data))
+      setMessages((messages) => messages.concat(parseMessage(data.trim())))
     })
     webSocket.addEventListener('open', () => {
       webSocket.send('PASS foobar')
@@ -38,6 +40,15 @@ function useMessages() {
     return () => webSocket.close()
   }, [])
   return messages
+}
+
+function parseMessage(message) {
+  try {
+    const [_, user, text] = /^:(.+?)!\S+ \w+ #\w+ :(.+)$/.exec(message)
+    return { user, text }
+  } catch {
+    return { text: message }
+  }
 }
 
 function App() {

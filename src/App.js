@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 
-function Chat({ messages }) {
+function Messages({ messages }) {
   return messages.length ? (
     <ChatMessages messages={messages} />
   ) : (
@@ -10,9 +10,13 @@ function Chat({ messages }) {
 }
 
 function ChatMessages({ messages }) {
-  return messages.map(({ text, user }, index) => (
+  const chatMessages = messages
+    .filter(({ user }) => user)
+    .map(({ text, user }, index) => (
     <div key={index}>{user}: {text}</div>
   ))
+
+  return chatMessages.length ? chatMessages : <div>Connected!</div>
 }
 
 function useMessages() {
@@ -52,7 +56,7 @@ function parseMessage(message) {
 }
 
 function App() {
-  return <Chat messages={useMessages()} />
+  return <Messages messages={useMessages()} />
 }
 
 export default App

@@ -13,8 +13,10 @@ function ChatMessages({ messages }) {
   const chatMessages = messages
     .filter(({ user }) => user)
     .map(({ text, user }, index) => (
-    <div key={index}>{user}: {text}</div>
-  ))
+      <div key={index}>
+        {user}: {text}
+      </div>
+    ))
 
   return chatMessages.length ? chatMessages : <div>Connected!</div>
 }
@@ -27,9 +29,9 @@ function useMessages() {
       'irc',
     )
     webSocket.addEventListener('message', ({ data }) => {
-      if (data.startsWith(':PING ')) {
-        webSocket.send(':PONG tmi.twitch.tv')
-        console.log('>', ':PONG tmi.twitch.tv')
+      if (data.startsWith('PING ')) {
+        webSocket.send('PONG tmi.twitch.tv')
+        console.log('>', 'PONG tmi.twitch.tv')
       }
       console.log('<', data)
       setMessages((messages) => messages.concat(parseMessage(data.trim())))

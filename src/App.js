@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 function Messages({ messages }) {
@@ -21,8 +21,11 @@ function ChatMessages({ messages }) {
   return chatMessages.length ? chatMessages : <div>Connected!</div>
 }
 
-function useMessages() {
+function useMessages(shouldPop) {
   const [messages, setMessages] = useState([])
+  useEffect(() => {
+    if (shouldPop) setMessages((messages) => messages.slice(1))
+  }, [shouldPop, messages])
   useEffect(() => {
     const webSocket = new WebSocket(
       'wss://irc-ws.chat.twitch.tv:443',
@@ -54,7 +57,7 @@ function useMessages() {
 
 function parseMessage(message) {
   try {
-    const [_, user, text] = /^:(.+?)!\S+ \w+ #\w+ :(.+)$/.exec(message)
+    const [, user, text] = /^:(.+?)!\S+ \w+ #\w+ :(.+)$/.exec(message)
     return { user, text }
   } catch {
     return { text: message }
@@ -62,7 +65,20 @@ function parseMessage(message) {
 }
 
 function App() {
-  return <Messages messages={useMessages()} />
+  const containerRef = useRef(null)
+  const [shouldPop, setShouldPop] = useState(false)
+  const messages = useMessages(shouldPop)
+  useEffect(() => {
+    setShouldPop(
+      containerRef.current.offsetHeight <
+        containerRef.current.scrollHeight,
+    )
+  }, [containerRef, messages])
+  return (
+    <div ref={containerRef} className="container">
+      <Messages messages={messages} />
+    </div>
+  )
 }
 
 export default App

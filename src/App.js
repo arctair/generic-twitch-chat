@@ -18,7 +18,11 @@ function ChatMessages({ messages }) {
       </div>
     ))
 
-  return chatMessages.length ? chatMessages : <div>Connected!</div>
+  return chatMessages.length ? (
+    chatMessages
+  ) : (
+    <div>Welcome to the stream! Hope you enjoy your time here :)</div>
+  )
 }
 
 function useMessages(shouldPop) {
